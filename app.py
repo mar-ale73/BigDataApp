@@ -203,7 +203,9 @@ def crear_coleccion():
         # Crear la colección
         db = client[database]
         collection = db[collection_name]
-        
+
+        documentos_insertados = 0
+
         # Procesar el archivo ZIP
         with zipfile.ZipFile(zip_file) as zip_ref:
             # Crear un directorio temporal para extraer los archivos
@@ -218,14 +220,15 @@ def crear_coleccion():
                 for file in files:
                     if file.endswith('.json'):
                         file_path = os.path.join(root, file)
-                        with open(file_path, 'r', encoding='utf-8') as f:
+                        with open(file_path, 'r', encoding='utf-8-sig') as f:
                             try:
                                 json_data = json.load(f)
-                                # Si el JSON es una lista, insertar cada elemento
                                 if isinstance(json_data, list):
                                     collection.insert_many(json_data)
+                                    documentos_insertados += len(json_data)
                                 else:
                                     collection.insert_one(json_data)
+                                    documentos_insertados += 1
                             except json.JSONDecodeError:
                                 print(f"Error al procesar el archivo {file}")
                             except Exception as e:
@@ -239,7 +242,12 @@ def crear_coleccion():
                     os.rmdir(os.path.join(root, dir))
             os.rmdir(temp_dir)
         
-        return redirect(url_for('gestion_proyecto', database=database))
+        return render_template('gestion/crear_coleccion.html',
+                            success_message=f'Se insertaron {documentos_insertados} documentos correctamente.',
+                            database=database,
+                            usuario=session['usuario'],
+                            version=VERSION_APP,
+                            creador=CREATOR_APP)
         
     except Exception as e:
         return render_template('gestion/crear_coleccion.html',
@@ -251,6 +259,7 @@ def crear_coleccion():
     finally:
         if 'client' in locals():
             client.close()
+
 
 @app.route('/ver-registros/<database>/<collection>')
 def ver_registros(database, collection):
