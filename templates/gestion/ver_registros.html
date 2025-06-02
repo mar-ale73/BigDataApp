@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -125,12 +125,12 @@
                                     let value = record[key];
                                     if (key === 'productos' && Array.isArray(value)) {
                                         let listItems = value.map(p => {
-                                            let linea = `${p.codigo} - ${p.total} unidades a $${p.valor_unitario}`;
-                                            if (p.descuento) linea += ` (descuento: ${p.descuento})`;
-                                            if (p.IVA !== undefined) linea += ` - IVA: ${p.IVA}`;
-                                            return `<li>${linea}</li>`;
+                                            let linea = ${p.codigo} - ${p.total} unidades a $${p.valor_unitario};
+                                            if (p.descuento) linea +=  (descuento: ${p.descuento});
+                                            if (p.IVA !== undefined) linea +=  - IVA: ${p.IVA};
+                                            return <li>${linea}</li>;
                                         }).join('');
-                                        value = `<ul class='mb-0 ps-3'>${listItems}</ul>`;
+                                        value = <ul class='mb-0 ps-3'>${listItems}</ul>;
                                     }
                                     rowData.push(value);
                                 }
