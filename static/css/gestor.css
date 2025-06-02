@@ -1,23 +1,35 @@
 
 body {
-    background: linear-gradient(to right, #f9cbac, #f7f7f1);
+    background: linear-gradient(to right, #e0e0e0, #f5f5f5);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
     min-height: 100vh;
     margin: 0;
     padding: 0;
 }
+
 .header {
-    background-color: rgba(138, 193, 242, 0.9);
+    background-color: rgba(100, 100, 100, 0.9); /* gris medio */
     padding: 1rem 0;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.5rem;
 }
+
 .container {
-    background-color: rgba(130, 180, 201, 0.9);
+    background-color: rgba(200, 200, 200, 0.9); /* gris claro */
     padding: 2rem;
     border-radius: 10px;
     margin-top: 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
 footer {
-    background-color: rgba(80, 129, 242, 0.9);
+    background-color: rgba(80, 80, 80, 0.9); /* gris oscuro */
     padding: 1rem 0;
     margin-top: 2rem;
-    color: #666;
+    color: #ddd;
+    text-align: center;
+    font-size: 0.9rem;
 }
