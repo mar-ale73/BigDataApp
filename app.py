@@ -7,6 +7,8 @@ from datetime import datetime
 import json
 import re
 from elasticsearch import Elasticsearch
+from bson.objectid import ObjectId
+
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'  # Cambia esto por una clave secreta segura
@@ -672,6 +674,40 @@ def search():
         return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+from bson.objectid import ObjectId
+
+@app.route('/ver-productos/<database>/<collection>/<record_id>')
+def ver_productos(database, collection, record_id):
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        client = connect_mongo()
+        db = client[database]
+        collection_obj = db[collection]
+
+        # Convertir ID a ObjectId para consulta
+        record = collection_obj.find_one({'_id': ObjectId(record_id)})
+
+        if not record:
+            return f"No se encontró el registro con ID {record_id}", 404
+
+        productos = record.get('productos', [])
+
+        return render_template('gestion/ver_productos.html',
+                               productos=productos,
+                               database=database,
+                               collection_name=collection,
+                               version=VERSION_APP,
+                               creador=CREATOR_APP,
+                               usuario=session['usuario'])
+    except Exception as e:
+        return f"Error al cargar productos: {str(e)}", 500
+    finally:
+        if 'client' in locals():
+            client.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
