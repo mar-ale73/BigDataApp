@@ -8,6 +8,8 @@ import json
 import re
 from elasticsearch import Elasticsearch
 from bson.objectid import ObjectId
+from datetime import datetime
+
 
 
 app = Flask(__name__)
@@ -54,12 +56,50 @@ def index():
 def about():
     return render_template('about.html', version=VERSION_APP,creador=CREATOR_APP)
 
+from datetime import datetime
+
 @app.route('/contacto', methods=['GET', 'POST'])
 def contacto():
     if request.method == 'POST':
-        # Aquí va la lógica para procesar el formulario de contacto
-        return redirect(url_for('contacto'))
-    return render_template('contacto.html', version=VERSION_APP,creador=CREATOR_APP)
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        asunto = request.form.get('asunto')
+        mensaje = request.form.get('mensaje')
+
+        mensaje_doc = {
+            "nombre": nombre,
+            "email": email,
+            "asunto": asunto,
+            "mensaje": mensaje,
+            "fecha": datetime.now()
+        }
+
+        # Guardar en MongoDB
+        try:
+            client = connect_mongo()
+            if not client:
+                raise Exception("No se pudo conectar a MongoDB")
+            
+            db = client['administracion']
+            mensajes_collection = db['contacto_mensajes']
+            mensajes_collection.insert_one(mensaje_doc)
+
+            return render_template('contacto.html',
+                                   success="✅ Tu mensaje fue enviado y almacenado correctamente.",
+                                   creador=CREATOR_APP,
+                                   version=VERSION_APP)
+        except Exception as e:
+            return render_template('contacto.html',
+                                   success=f"⚠️ Error al guardar el mensaje: {str(e)}",
+                                   creador=CREATOR_APP,
+                                   version=VERSION_APP)
+        finally:
+            if 'client' in locals():
+                client.close()
+
+    return render_template('contacto.html',
+                           creador=CREATOR_APP,
+                           version=VERSION_APP)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -75,7 +115,7 @@ def login():
             security_collection = db['seguridad']
             usuario = request.form['usuario']
             password = request.form['password']
-            # Verificar credenciales en MongoDB
+            # Verificar credenciales en MongoDB 
             user = security_collection.find_one({
                 'usuario': usuario,
                 'password': password

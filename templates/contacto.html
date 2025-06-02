@@ -27,6 +27,11 @@
 
     <div class="container">
         <h1 class="text-center mb-4">Contactar</h1>
+
+            {% if success %}
+                <div class="alert alert-success text-center col-md-8 mx-auto">{{ success }}</div>
+            {% endif %}
+
         
         <form method="POST" action="/contacto" class="col-md-8 mx-auto">
             <div class="mb-3">
