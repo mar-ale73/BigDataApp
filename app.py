@@ -7,6 +7,8 @@ from datetime import datetime
 import json
 import re
 from elasticsearch import Elasticsearch
+from bson.objectid import ObjectId
+
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'  # Cambia esto por una clave secreta segura
@@ -672,6 +674,7 @@ def search():
         return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
