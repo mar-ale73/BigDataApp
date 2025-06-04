@@ -762,5 +762,54 @@ def ver_productos(database, collection, registro_id):
             client.close()
 
 
+@app.route('/ver-estadisticas/<database>/<collection>')
+def ver_estadisticas(database, collection):
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        client = connect_mongo()
+        if not client:
+            raise Exception("No se pudo conectar a MongoDB")
+
+        db = client[database]
+        collection_obj = db[collection]
+
+        registros = list(collection_obj.find().limit(1000))  # puedes ajustar el límite
+        stats = {}
+
+        if registros:
+            ejemplo = registros[0]
+            for campo in ejemplo:
+                if campo != "_id":
+                    valores = [r.get(campo) for r in registros if campo in r]
+                    stats[campo] = {
+                        "tipo": type(valores[0]).__name__,
+                        "total_no_nulos": len([v for v in valores if v is not None]),
+                        "valores_unicos": len(set(valores))
+                    }
+        
+        return render_template('gestion/ver_estadisticas.html',
+                               stats=stats,
+                               database=database,
+                               collection=collection,
+                               version=VERSION_APP,
+                               creador=CREATOR_APP,
+                               usuario=session['usuario'])
+
+    except Exception as e:
+        return render_template('gestion/ver_estadisticas.html',
+                               stats={},
+                               error_message=str(e),
+                               version=VERSION_APP,
+                               creador=CREATOR_APP,
+                               usuario=session['usuario'])
+
+    finally:
+        if 'client' in locals():
+            client.close()
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
