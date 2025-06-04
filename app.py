@@ -808,9 +808,6 @@ def ver_estadisticas(database, collection):
     finally:
         if 'client' in locals():
             client.close()
-            
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
