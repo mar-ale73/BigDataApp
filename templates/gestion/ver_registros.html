@@ -59,6 +59,18 @@
                                             {% if key == 'productos' and value is iterable and value is not string %}
                                                 <a href="{{ url_for('ver_productos', database=database, collection=collection_name, registro_id=record['_id']) }}"
                                                    target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>
+                                            {% elif value is mapping %}
+                                                <ul class="mb-0 ps-3">
+                                                    {% for subkey, subvalue in value.items() %}
+                                                        <li><strong>{{ subkey }}:</strong> {{ subvalue }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% elif value is iterable and value is not string %}
+                                                <ul class="mb-0 ps-3">
+                                                    {% for item in value %}
+                                                        <li>{{ item }}</li>
+                                                    {% endfor %}
+                                                </ul>
                                             {% else %}
                                                 {{ value }}
                                             {% endif %}
@@ -111,6 +123,12 @@
                                     let value = record[key];
                                     if (key === 'productos' && Array.isArray(value)) {
                                         value = `<a href="/ver-productos/${database}/${collection}/${record._id}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>`;
+                                    } else if (value && typeof value === 'object') {
+                                        if (Array.isArray(value)) {
+                                            value = '<ul class="mb-0 ps-3">' + value.map(v => `<li>${JSON.stringify(v)}</li>`).join('') + '</ul>';
+                                        } else {
+                                            value = '<ul class="mb-0 ps-3">' + Object.entries(value).map(([k, v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('') + '</ul>';
+                                        }
                                     } else {
                                         value = value ?? '';
                                     }
@@ -139,4 +157,3 @@
     </style>
 </body>
 </html>
-
