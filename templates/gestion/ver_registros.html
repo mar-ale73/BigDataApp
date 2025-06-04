@@ -60,7 +60,24 @@
                                                 <a href="{{ url_for('ver_productos', database=database, collection=collection_name, registro_id=record['_id']) }}"
                                                    target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>
                                             {% elif value is mapping %}
-                                                <pre class="bg-light border rounded p-2">{{ value | tojson(indent=2) }}</pre>
+                                                <ul class="mb-0 ps-3">
+                                                    {% for subkey, subvalue in value.items() %}
+                                                        <li><strong>{{ subkey }}:</strong>
+                                                            {% if subvalue is mapping or subvalue is iterable and subvalue is not string %}
+                                                                <ul>
+                                                                    {% for k, v in subvalue.items() if subvalue is mapping %}
+                                                                        <li><strong>{{ k }}:</strong> {{ v }}</li>
+                                                                    {% endfor %}
+                                                                    {% for item in subvalue if subvalue is iterable and subvalue is not mapping and subvalue is not string %}
+                                                                        <li>{{ item }}</li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% else %}
+                                                                {{ subvalue }}
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
                                             {% elif value is iterable and value is not string %}
                                                 <ul class="mb-0 ps-3">
                                                     {% for item in value %}
@@ -119,10 +136,27 @@
                                     let value = record[key];
                                     if (key === 'productos' && Array.isArray(value)) {
                                         value = `<a href="/ver-productos/${database}/${collection}/${record._id}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>`;
-                                    } else if (value && typeof value === 'object') {
-                                        value = '<pre class="bg-light border rounded p-2">' + JSON.stringify(value, null, 2) + '</pre>';
-                                    } else {
-                                        value = value ?? '';
+                                    } else if (typeof value === 'object' && value !== null) {
+                                        let html = '<ul>';
+                                        for (const k in value) {
+                                            html += `<li><strong>${k}:</strong> `;
+                                            if (typeof value[k] === 'object') {
+                                                html += '<ul>';
+                                                if (Array.isArray(value[k])) {
+                                                    value[k].forEach(v => html += `<li>${v}</li>`);
+                                                } else {
+                                                    for (const subk in value[k]) {
+                                                        html += `<li><strong>${subk}:</strong> ${value[k][subk]}</li>`;
+                                                    }
+                                                }
+                                                html += '</ul>';
+                                            } else {
+                                                html += `${value[k]}`;
+                                            }
+                                            html += '</li>';
+                                        }
+                                        html += '</ul>';
+                                        value = html;
                                     }
                                     rowData.push(value);
                                 }
@@ -145,6 +179,11 @@
         .loading {
             opacity: 0.5;
             pointer-events: none;
+        }
+        td ul {
+            padding-left: 1.2rem;
+            margin-bottom: 0;
+            list-style-type: disc;
         }
     </style>
 </body>
