@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -60,19 +60,7 @@
                                 {% for key, value in record.items() if key != '_id' %}
                                     <td>
                                         {% if key == 'productos' and value is iterable and value is not string %}
-                                            <ul class="mb-0 ps-3">
-                                                {% for producto in value %}
-                                                    <li>
-                                                        {{ producto['codigo'] }} - {{ producto['total'] }} unidades a ${{ producto['valor_unitario'] }}
-                                                        {% if producto.get('descuento') %}
-                                                            (descuento: {{ producto['descuento'] }})
-                                                        {% endif %}
-                                                        {% if producto.get('IVA') is not none %}
-                                                            - IVA: {{ producto['IVA'] }}
-                                                        {% endif %}
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
+                                            <a href="{{ url_for('ver_productos', database=database, collection_name=collection_name, record_id=record['_id']) }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>
                                         {% else %}
                                             {{ value }}
                                         {% endif %}
@@ -105,9 +93,9 @@
                 const limit = $(this).val();
                 const database = '{{ database }}';
                 const collection = '{{ collection_name }}';
-                
+
                 $('#recordsTable').addClass('loading');
-                
+
                 $.ajax({
                     url: '/obtener-registros',
                     method: 'POST',
@@ -124,14 +112,7 @@
                                 if (key !== '_id') {
                                     let value = record[key];
                                     if (key === 'productos' && Array.isArray(value)) {
-                                        let listItems = value.map(p => {
-                                            let linea = `${p.codigo} - ${p.total} unidades a $${p.valor_unitario}`;
-                                            if (p.descuento) linea += ` (descuento: ${p.descuento})`;
-                                            if (p.IVA !== undefined) linea += ` - IVA: ${p.IVA}`;
-                                            return `<li>${linea}</li>`;
-                                            return <li>${linea}</li>;
-                                        }).join('');
-                                        value = `<ul class='mb-0 ps-3'>${listItems}</ul>`;
+                                        value = `<a href='/ver-productos/${database}/${collection}/${record._id}' target='_blank' class='btn btn-sm btn-outline-primary'>Ver productos</a>`;
                                     }
                                     rowData.push(value);
                                 }
@@ -154,9 +135,6 @@
         .loading {
             opacity: 0.5;
             pointer-events: none;
-        }
-        ul {
-            margin-bottom: 0;
         }
     </style>
 </body>
