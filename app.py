@@ -9,6 +9,7 @@ import re
 from elasticsearch import Elasticsearch
 from bson.objectid import ObjectId
 from datetime import datetime
+from bson.objectid import ObjectId
 
 
 
@@ -723,6 +724,42 @@ def search():
         return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/ver-productos/<database>/<collection>/<registro_id>')
+def ver_productos(database, collection, registro_id):
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        client = connect_mongo()
+        if not client:
+            raise Exception("No se pudo conectar a MongoDB")
+
+        db = client[database]
+        collection_obj = db[collection]
+        registro = collection_obj.find_one({"_id": ObjectId(registro_id)})
+
+        productos = registro.get('productos', []) if registro else []
+
+        return render_template(
+            'gestion/ver_productos.html',
+            productos=productos,
+            version=VERSION_APP,
+            creador=CREATOR_APP
+        )
+
+    except Exception as e:
+        return render_template(
+            'gestion/ver_productos.html',
+            productos=[],
+            version=VERSION_APP,
+            creador=CREATOR_APP
+        )
+
+    finally:
+        if 'client' in locals():
+            client.close()
 
 
 if __name__ == '__main__':

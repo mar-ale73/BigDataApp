@@ -9,17 +9,30 @@
     <div class="container mt-4">
         <h3 class="mb-4">Detalle de productos</h3>
 
-        {% if productos %}
-            <div class="list-group">
-                {% for p in productos %}
-                    <div class="list-group-item mb-2">
-                        <p><strong>Código:</strong> {{ p.codigo }}</p>
-                        <p><strong>Total:</strong> {{ p.total }}</p>
-                        <p><strong>Valor unitario:</strong> ${{ p.valor_unitario }}</p>
-                        <p><strong>Descuento:</strong> {{ p.descuento }}</p>
-                        <p><strong>IVA:</strong> {{ p.IVA }}</p>
-                    </div>
-                {% endfor %}
+        {% if productos and productos|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Total</th>
+                            <th>Valor Unitario</th>
+                            <th>Descuento</th>
+                            <th>IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in productos %}
+                        <tr>
+                            <td>{{ p.codigo }}</td>
+                            <td>{{ p.total }}</td>
+                            <td>${{ p.valor_unitario }}</td>
+                            <td>{{ p.descuento if p.descuento is defined else '0' }}</td>
+                            <td>{{ p.IVA if p.IVA is defined else '0' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% else %}
             <div class="alert alert-warning">No hay productos en este registro.</div>
