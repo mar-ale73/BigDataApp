@@ -812,7 +812,7 @@ def ver_estadisticas(database, collection):
 @app.route('/ver-registros-formulario')
 def ver_registros_formulario():
     if 'usuario' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('login'))  # Redirige a login si no hay sesión
 
     try:
         client = connect_mongo()
@@ -824,10 +824,10 @@ def ver_registros_formulario():
         records = list(collection.find().limit(100))
         
         for record in records:
-            record['_id'] = str(record['_id'])  # evitar problemas con ObjectId
+            record['_id'] = str(record['_id'])  # Convertir ObjectId a string
 
         return render_template(
-            'gestion/ver_registros_formulario.html',
+            'gestion/ver_registros_formulario.html',  # ⚠️ Este nombre debe existir tal cual
             database='administracion',
             collection_name='contacto_mensajes',
             records=records,
@@ -838,9 +838,11 @@ def ver_registros_formulario():
 
     except Exception as e:
         return f"❌ Error al cargar registros: {str(e)}"
+
     finally:
         if 'client' in locals():
             client.close()
+
 
 
 
