@@ -809,5 +809,40 @@ def ver_estadisticas(database, collection):
         if 'client' in locals():
             client.close()
 
+@app.route('/ver-registros-formulario')
+def ver_registros_formulario():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        client = connect_mongo()
+        if not client:
+            raise Exception("No se pudo conectar a MongoDB")
+        
+        db = client['administracion']
+        collection = db['contacto_mensajes']
+        records = list(collection.find().limit(100))
+        
+        for record in records:
+            record['_id'] = str(record['_id'])  # evitar problemas con ObjectId
+
+        return render_template(
+            'gestion/ver_registros_formulario.html',
+            database='administracion',
+            collection_name='contacto_mensajes',
+            records=records,
+            version=VERSION_APP,
+            creador=CREATOR_APP,
+            usuario=session['usuario']
+        )
+
+    except Exception as e:
+        return f"❌ Error al cargar registros: {str(e)}"
+    finally:
+        if 'client' in locals():
+            client.close()
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

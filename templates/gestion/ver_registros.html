@@ -12,12 +12,13 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <h2 class="h3 mb-0">BigData-MiProyecto <b>[{{ usuario }}]</b></h2>
-                <nav>
-                    <ul class="nav">
-                        <li class="nav-item"><a class="nav-link" href="/gestion_proyecto">Gestionar Mongo Db</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/elasticAdmin">Gestionar Elastic</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/">Salir</a></li>
-                    </ul>
+               <nav>
+                <ul class="nav">
+                    <li class="nav-item"><a class="nav-link" href="/gestion_proyecto">Gestionar Mongo Db</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/elasticAdmin">Gestionar Elastic</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/ver-registros-formulario">Ver Formularios</a></li>  <!-- NUEVO -->
+                    <li class="nav-item"><a class="nav-link" href="/">Salir</a></li>
+                </ul>
                 </nav>
             </div>
         </div>
@@ -60,24 +61,7 @@
                                                 <a href="{{ url_for('ver_productos', database=database, collection=collection_name, registro_id=record['_id']) }}"
                                                    target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>
                                             {% elif value is mapping %}
-                                                <ul class="mb-0 ps-3">
-                                                    {% for subkey, subvalue in value.items() %}
-                                                        <li><strong>{{ subkey }}:</strong>
-                                                            {% if subvalue is mapping or subvalue is iterable and subvalue is not string %}
-                                                                <ul>
-                                                                    {% for k, v in subvalue.items() if subvalue is mapping %}
-                                                                        <li><strong>{{ k }}:</strong> {{ v }}</li>
-                                                                    {% endfor %}
-                                                                    {% for item in subvalue if subvalue is iterable and subvalue is not mapping and subvalue is not string %}
-                                                                        <li>{{ item }}</li>
-                                                                    {% endfor %}
-                                                                </ul>
-                                                            {% else %}
-                                                                {{ subvalue }}
-                                                            {% endif %}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
+                                                <pre>{{ value | tojson(indent=4) }}</pre>
                                             {% elif value is iterable and value is not string %}
                                                 <ul class="mb-0 ps-3">
                                                     {% for item in value %}
@@ -137,26 +121,9 @@
                                     if (key === 'productos' && Array.isArray(value)) {
                                         value = `<a href="/ver-productos/${database}/${collection}/${record._id}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>`;
                                     } else if (typeof value === 'object' && value !== null) {
-                                        let html = '<ul>';
-                                        for (const k in value) {
-                                            html += `<li><strong>${k}:</strong> `;
-                                            if (typeof value[k] === 'object') {
-                                                html += '<ul>';
-                                                if (Array.isArray(value[k])) {
-                                                    value[k].forEach(v => html += `<li>${v}</li>`);
-                                                } else {
-                                                    for (const subk in value[k]) {
-                                                        html += `<li><strong>${subk}:</strong> ${value[k][subk]}</li>`;
-                                                    }
-                                                }
-                                                html += '</ul>';
-                                            } else {
-                                                html += `${value[k]}`;
-                                            }
-                                            html += '</li>';
-                                        }
-                                        html += '</ul>';
-                                        value = html;
+                                        value = `<pre>${JSON.stringify(value, null, 2)}</pre>`;
+                                    } else {
+                                        value = value ?? '';
                                     }
                                     rowData.push(value);
                                 }
@@ -180,10 +147,13 @@
             opacity: 0.5;
             pointer-events: none;
         }
-        td ul {
-            padding-left: 1.2rem;
-            margin-bottom: 0;
-            list-style-type: disc;
+        td pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
     </style>
 </body>
