@@ -1,10 +1,10 @@
 {
-    "id": "RS_123",
-    "autor": "Ana Gómez",
-    "fecha": "2025-05-23 10:00:00",
-    "titulo": "Impacto de la Inteligencia Artificial en el Sector Financiero",
-    "texto": "Este documento analiza cómo la inteligencia artificial está transformando los procesos financieros, desde la evaluación de riesgos hasta la automatización del servicio al cliente.",
-    "categoria": "Tecnología",
-    "clasificacion": "Transformación Digital",
-    "subclasificacion": "Inteligencia Artificial"
+    "id": "RS_125",
+    "autor": "Laura Camargo",
+    "fecha": "2025-03-10 08:45:00",
+    "titulo": "Innovación pedagógica en entornos virtuales de aprendizaje",
+    "texto": "Este documento explora metodologías activas aplicadas en plataformas virtuales, incluyendo aprendizaje basado en proyectos, flipped classroom y evaluación formativa en línea.",
+    "categoria": "Educación",
+    "clasificacion": "Tecnología Educativa",
+    "subclasificacion": "Aprendizaje Virtual"
 }
