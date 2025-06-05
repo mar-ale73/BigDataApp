@@ -57,7 +57,7 @@
                                     {% for key, value in record.items() if key != '_id' %}
                                         <td>
                                             {% if key == 'productos' and value is iterable and value is not string %}
-                                                <a href="{{ url_for('ver_productos', database=database, collection=collection_name, registro_id=record['_id']) }}"
+                                                <a href="{{ url_for('ver_productos', database=database, collection_name_route=collection_name, registro_id=record['_id']) }}"
                                                    target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>
                                             {% elif value is mapping %}
                                                 <ul class="mb-0 ps-3">
@@ -135,7 +135,9 @@
                                 if (key !== '_id') {
                                     let value = record[key];
                                     if (key === 'productos' && Array.isArray(value)) {
-                                        value = `<a href="/ver-productos/${database}/${collection}/${record._id}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>`;
+                                        const registroId = record._id?.$oid || record._id;  // Soporta ambos formatos
+                                        value = `<a href="/ver-productos/${database}/${collection}/${registroId}" target="_blank" class="btn btn-sm btn-outline-primary">Ver productos</a>`;
+
                                     } else if (typeof value === 'object' && value !== null) {
                                         let html = '<ul>';
                                         for (const k in value) {
@@ -187,5 +189,4 @@
         }
     </style>
 </body>
-
 </html>
