@@ -376,40 +376,39 @@ def crear_coleccion():
                         version=VERSION_APP,
                         creador=CREATOR_APP)
 
-
-@app.route('/ver-registros/<database>/<collection_name_route>') 
-def ver_registros(database, collection_name_route):
+@app.route('/ver-registros/<database>/<collection>')
+def ver_registros(database, collection):
     if 'usuario' not in session:
         return redirect(url_for('login'))
-    
-    client_mongo = None 
+
+    client_mongo = None
     records_list = []
     error_msg = None
     try:
-        client_mongo = connect_mongo() 
+        client_mongo = connect_mongo()
         if not client_mongo:
             error_msg = 'Error de conexión con MongoDB'
         else:
-            db = client_mongo[database] 
-            collection_obj = db[collection_name_route] 
+            db = client_mongo[database]
+            collection_obj = db[collection]  # ✅ Aquí está la corrección
             records_list = list(collection_obj.find().limit(100))
-            for record_item in records_list: 
+            for record_item in records_list:
                 record_item['_id'] = str(record_item['_id'])
-        
+
     except Exception as e:
         error_msg = f'Error al obtener registros: {str(e)}'
     finally:
-        if client_mongo: 
+        if client_mongo:
             client_mongo.close()
 
     return render_template('gestion/ver_registros.html',
-                        database=database,
-                        collection_name=collection_name_route,
-                        records=records_list,
-                        error_message=error_msg, 
-                        version=VERSION_APP,
-                        creador=CREATOR_APP,
-                        usuario=session['usuario'])
+                           database=database,
+                           collection_name=collection,  # Este nombre se usa en el HTML
+                           records=records_list,
+                           error_message=error_msg,
+                           version=VERSION_APP,
+                           creador=CREATOR_APP,
+                           usuario=session['usuario'])
 
 
 @app.route('/obtener-registros', methods=['POST'])
